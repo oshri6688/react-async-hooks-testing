@@ -3,7 +3,6 @@ import { getData } from "services/dataService";
 
 export const useFetchData = () => {
   const [data, setData] = useState([]);
-  const [fetched, setFetched] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchData = () => {
@@ -18,13 +17,12 @@ export const useFetchData = () => {
       })
       .finally(() => {
         setIsLoading(false);
-        setFetched(true);
       });
   };
 
   useEffect(() => {
-    !fetched && fetchData();
-  }, [fetched]);
+    fetchData();
+  }, []);
 
   return { data, fetchData, isLoading };
 };

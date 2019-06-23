@@ -3,7 +3,6 @@ import { getData } from "services/dataService";
 
 const CommentWithHooks = () => {
   const [data, setData] = useState(null);
-  const [fetched, setFetched] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchData = () => {
@@ -18,13 +17,12 @@ const CommentWithHooks = () => {
       })
       .finally(() => {
         setIsLoading(false);
-        setFetched(true);
       });
   };
 
   useEffect(() => {
-    !fetched && fetchData();
-  }, [fetched]);
+    fetchData();
+  }, []);
 
   return (
     <div>
