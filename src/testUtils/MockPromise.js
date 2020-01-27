@@ -1,11 +1,8 @@
-import { act } from "react-dom/test-utils";
+import { act } from 'react-dom/test-utils';
+import { isFunction } from 'lodash';
 
-const createMockCallback = callback => (...args) => {
+export const withAct = callback => (...args) => {
   let result;
-
-  if (!callback) {
-    return;
-  }
 
   act(() => {
     result = callback(...args);
@@ -35,9 +32,7 @@ export default class MockPromise {
   }
 
   then(...callbacks) {
-    const mockCallbacks = callbacks.map(callback =>
-      createMockCallback(callback)
-    );
+    const mockCallbacks = callbacks.map(callback => withAct(callback));
 
     this.promise = this.promise.then(...mockCallbacks);
 
@@ -45,7 +40,7 @@ export default class MockPromise {
   }
 
   catch(callback) {
-    const mockCallback = createMockCallback(callback);
+    const mockCallback = withAct(callback);
 
     this.promise = this.promise.catch(mockCallback);
 
@@ -53,9 +48,13 @@ export default class MockPromise {
   }
 
   finally(callback) {
-    const mockCallback = createMockCallback(callback);
+    const mockCallback = withAct(callback);
 
-    this.promise = this.promise.finally(mockCallback);
+    if (isFunction(this.promise.finally)) {
+      this.promise = this.promise.finally(mockCallback);
+    } else {
+      this.promise = this.promise.then(mockCallback);
+    }
 
     return this;
   }
